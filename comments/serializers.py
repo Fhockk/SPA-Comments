@@ -16,3 +16,9 @@ class CommentSerializer(serializers.ModelSerializer):
         if obj.replies:
             return CommentSerializer(obj.replies.all(), many=True).data
         return None
+
+    def create(self, validated_data):
+        comment = super().create(validated_data)
+        comment.clean()
+        comment.save()
+        return comment
