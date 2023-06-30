@@ -2,6 +2,7 @@ from PIL import Image
 from io import BytesIO
 from rest_framework import serializers
 from django.core.files.base import ContentFile
+from django.template.defaultfilters import filesizeformat
 
 from comments.models import Comment
 
@@ -45,11 +46,24 @@ class CommentSerializer(serializers.ModelSerializer):
                 image.file = ContentFile(new_img_io.getvalue(), name=image.name)
         return image
 
+    def validate_text_file(self, file):
+        if file:
+            if file.size > 100 * 1024:
+                raise serializers.ValidationError('Size of the text file should not exceed 100 kB. ' +
+                                                  f'Your file size is {filesizeformat(file.size)}.')
+            if not file.name.endswith('.txt'):
+                raise serializers.ValidationError('Invalid file format. Only .txt format is accepted.')
+        return file
+
     def create(self, validated_data):
+        if 'text_file' in validated_data:
+            validated_data['text_file'] = self.validate_text_file(validated_data['text_file'])
         comment = super().create(validated_data)
         return comment
 
     def update(self, instance, validated_data):
         if 'image' in validated_data:
             instance.image = self.validate_image(validated_data['image'])
+        if 'text_file' in validated_data:
+            instance.text_file = self.validate_text_file(validated_data['text_file'])
         return super().update(instance, validated_data)
