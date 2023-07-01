@@ -1,5 +1,6 @@
 from django.db.models.signals import post_save, pre_save, post_delete
 from django.dispatch import receiver
+from django.forms.models import model_to_dict
 
 from .models import User
 
@@ -20,8 +21,12 @@ def user_updated(sender, instance, **kwargs):
         # Если объекта не существует, значит, он только что создан.
         return
     else:
-        if orig.username != instance.username or orig.email != instance.email:
-            print(f'{sender.__name__} {instance.username} with ID: {instance.id} updated')
+        orig_dict = model_to_dict(orig)
+        instance_dict = model_to_dict(instance)
+        changes = {f: (orig_dict.get(f), instance_dict.get(f)) for f in orig_dict.keys() if
+                   orig_dict.get(f) != instance_dict.get(f)}
+        if changes:
+            print(f'{sender.__name__} {instance.username} with ID: {instance.id} has these changes {changes}')
 
 
 # Сигнал при удалении экземпляра User
