@@ -1,5 +1,5 @@
-from PIL import Image
 from io import BytesIO
+from PIL import Image
 from rest_framework import serializers
 from django.core.files.base import ContentFile
 from django.template.defaultfilters import filesizeformat
