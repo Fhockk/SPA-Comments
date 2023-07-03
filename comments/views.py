@@ -2,15 +2,23 @@ from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
 from rest_framework import viewsets
 from rest_framework.filters import OrderingFilter
+from rest_framework.pagination import PageNumberPagination
 
 from comments.models import Comment
 from comments.serializers import CommentSerializer
+
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 25
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
 
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.filter(parent=None).prefetch_related('replies')
     serializer_class = CommentSerializer
     filter_backends = [OrderingFilter]
+    pagination_class = StandardResultsSetPagination
     ordering_fields = ['created_at', 'updated_at', 'author__username', 'author__email']
     ordering = ['-created_at']
 
