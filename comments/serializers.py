@@ -19,8 +19,8 @@ class CommentSerializer(serializers.ModelSerializer):
         )
 
     def get_replies(self, obj):
-        if obj.replies:
-            return CommentSerializer(obj.replies.all(), many=True).data
+        if obj.replies.exists():
+            return CommentSerializer(obj.replies.all().order_by('-created_at'), many=True).data
         return None
 
         # img[0] - width, img[1] - height
