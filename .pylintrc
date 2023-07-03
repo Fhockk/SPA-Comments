@@ -1,2 +1,15 @@
+[MASTER]
+ignore=migrations
+disable = missing-module-docstring, missing-function-docstring,
+            trailing-whitespace, missing-class-docstring,
+            import-outside-toplevel, unused-import,
+            unused-argument, duplicate-code, too-few-public-methods,
+            raise-missing-from, no-else-return,
+            consider-iterating-dictionary, too-many-ancestors,
+            no-member
+
+
+
+
 [FORMAT]
-max-line-length = 120
+max-line-length=120
